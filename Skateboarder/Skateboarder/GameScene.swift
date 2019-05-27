@@ -262,6 +262,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Проверяем, есть ли контакт между скейтбордисткой и секцией
         if contact.bodyA.categoryBitMask == PhysicsCategory.skater && contact.bodyB.categoryBitMask == PhysicsCategory.brick {
             skater.isOnGround = true
+        } else if contact.bodyA.categoryBitMask == PhysicsCategory.skater && contact.bodyB.categoryBitMask == PhysicsCategory.gem {
+            // Скейтбордистка коснулась алмаза, поэтому мы его убираем
+            if let gem = contact.bodyB.node as? SKSpriteNode {
+                removeGem(gem)
+            }
         }
     }
 }
