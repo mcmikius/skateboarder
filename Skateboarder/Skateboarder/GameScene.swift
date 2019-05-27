@@ -8,7 +8,7 @@
 
 import SpriteKit
 
-class GameScene: SKScene {
+class GameScene: SKScene, SKPhysicsContactDelegate {
     // Массив, содержащий все текущие секции тротуара
     var bricks = [SKSpriteNode]()
     // Размер секций на тротуаре
@@ -27,7 +27,7 @@ class GameScene: SKScene {
     override func didMove(to view: SKView) {
         
         physicsWorld.gravity = CGVector(dx: 0.0, dy: -6.0)
-        
+        physicsWorld.contactDelegate = self
         anchorPoint = CGPoint.zero
         let background = SKSpriteNode(imageNamed: "background")
         let xMid = frame.midX
@@ -166,12 +166,16 @@ class GameScene: SKScene {
     }
     
     @objc func handleTap(tapGesture: UITapGestureRecognizer) {
-        // Скейтбордистка прыгает, если игрок нажимает на экран, пока она находится на земле
+        // Заставляем скейтбордистку прыгнуть нажатием на экран, 8 пока она находится на земле
         if skater.isOnGround {
-            // Задаем для скейтбордистки скорость по оси y, равную ее изначальной скорости прыжка
-            skater.velocity = CGPoint(x: 0.0, y: skater.jumpSpeed)
-            // Отмечаем, что скейтбордистка уже не находится на земле
-            skater.isOnGround = false
+            skater.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: 260.0))
+        }
+    }
+    // MARK:- SKPhysicsContactDelegate Methods
+    func didBegin(_ contact: SKPhysicsContact) {
+        // Проверяем, есть ли контакт между скейтбордисткой и секцией
+        if contact.bodyA.categoryBitMask == PhysicsCategory.skater && contact.bodyB.categoryBitMask == PhysicsCategory.brick {
+            skater.isOnGround = true
         }
     }
 }
