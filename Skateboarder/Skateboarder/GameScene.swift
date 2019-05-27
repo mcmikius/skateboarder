@@ -18,6 +18,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     // Массив, содержащий все текущие секции тротуара
     var bricks = [SKSpriteNode]()
+    
+    // Массив,содержащий все активные алмазы
+    var gems = [SKSpriteNode]()
+    
     // Размер секций на тротуаре
     var brickSize = CGSize.zero
     
@@ -112,6 +116,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         return brick
     }
     
+    func spawnGem(atPosition position: CGPoint) {
+        // Создаем спрайт для алмаза и добавляем его к сцене
+        let gem = SKSpriteNode(imageNamed: "gem")
+        gem.position = position
+        gem.zPosition = 9
+        addChild(gem)
+        gem.physicsBody = SKPhysicsBody(rectangleOf: gem.size, center: gem.centerRect.origin)
+        gem.physicsBody?.categoryBitMask = PhysicsCategory.gem
+        gem.physicsBody?.affectedByGravity = false
+        // Добавляем новый алмаз к массиву
+        gems.append(gem)
+    }
+    
+    func removeGem(_ gem: SKSpriteNode) {
+        gem.removeFromParent()
+        if let gemIndex = gems.firstIndex(of: gem) {
+            gems.remove(at: gemIndex)
+        }
+    }
+    
     func updateBricks(withScrollAmount currentScrollAmount: CGFloat) {
         // Отслеживаем самое большое значение по оси x для всех существующих секций
         var farthestRightBrickX: CGFloat = 0.0
@@ -156,6 +180,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // возникнет разрыв между секциями
                 let gap = 20.0 * scrollSpeed
                 brickX += gap
+                // На каждом разрыве добавляем алмаз
+                let randomGemYAmount = CGFloat(arc4random_uniform(150))
+                let newGemY = brickY + skater.size.height + randomGemYAmount
+                let newGemX = brickX - gap / 2.0
+                spawnGem(atPosition: CGPoint(x: newGemX, y: newGemY))
             } else if randomNumber < 10 {
                 // В игре имеется 5-процентный шанс на изменение уровня секции
                 if brickLevel == .high {
