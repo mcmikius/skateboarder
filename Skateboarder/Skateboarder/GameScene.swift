@@ -85,7 +85,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             brick.removeFromParent()
         }
         bricks.removeAll(keepingCapacity: true)
-        
+        for gem in gems {
+            removeGem(gem)
+        }
     }
     
     func gameOver() {
@@ -200,6 +202,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func updateGems(withScrollAmount currentScrollAmount: CGFloat) {
+        for gem in gems {
+            // Обновляем положение каждого алмаза
+            let thisGemX = gem.position.x - currentScrollAmount
+            gem.position = CGPoint(x: thisGemX, y: gem.position.y)
+            // Удаляем любые алмазы, ушедшие с экрана
+            if gem.position.x < 0.0 {
+                removeGem(gem)
+            }
+        }
+    }
+    
     func updateSkater() {
         // Определяем, находится ли скейтбордистка на земле
         if let velocityY = skater.physicsBody?.velocity.dy {
@@ -234,6 +248,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let currentScrollAmount = scrollSpeed * scrollAdjustment
         updateBricks(withScrollAmount: currentScrollAmount)
         updateSkater()
+        updateGems(withScrollAmount: currentScrollAmount)
     }
     
     @objc func handleTap(tapGesture: UITapGestureRecognizer) {
