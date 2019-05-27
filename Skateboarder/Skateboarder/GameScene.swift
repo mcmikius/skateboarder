@@ -16,6 +16,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         case low = 0.0
         case high = 100.0
     }
+    
+    // Этот enum определяет состояния, в которых может находиться игра
+    enum GameState {
+        case notRunning
+        case running
+    }
     // Массив, содержащий все текущие секции тротуара
     var bricks = [SKSpriteNode]()
     
@@ -27,11 +33,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Текущий уровень определяет положение по оси y для новых секций
     var brickLevel = BrickLevel.low
+    // Отслеживаем текущее состояние игры
+    var gameState = GameState.notRunning
     
     // Настройка скорости движения направо для игры
     // Это значение может увеличиваться по мере продвижения пользователя в игре
-    var scrollSpeed: CGFloat = 2.0
-    let startingScrollSpeed: CGFloat = 2.0
+    var scrollSpeed: CGFloat = 5.0
+    let startingScrollSpeed: CGFloat = 5.0
     // Константа для гравитации (того, как быстро объекты падают на Землю)
     let gravitySpeed: CGFloat = 1.5
     // Свойства для отслеживания результата
@@ -130,6 +138,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func startGame() {
+        gameState = .running
         // Возвращение к начальным условиям при запуске новой игры
         resetSkater()
         score = 0
@@ -146,13 +155,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func gameOver() {
+        gameState = .notRunning
         // По завершении игры проверяем, добился ли игрок нового рекорда
         if score > highScore {
             highScore = score
         }
-        startGame()
-        
-        
     }
     
     func spawnBrick(atPosition position: CGPoint) -> SKSpriteNode {
@@ -304,7 +311,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        
+        if gameState != .running {
+            return
+        }
         // Медленно увеличиваем значение scrollSpeed по мере развития игры
         scrollSpeed += 0.001
         
