@@ -22,6 +22,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         case notRunning
         case running
     }
+    
+    // MARK:- Class Properties
+    
     // Массив, содержащий все текущие секции тротуара
     var bricks = [SKSpriteNode]()
     
@@ -315,7 +318,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             return
         }
         // Медленно увеличиваем значение scrollSpeed по мере развития игры
-        scrollSpeed += 0.001
+        scrollSpeed += 0.01
         
         // Определяем время, прошедшее с момента последнего вызова update
         var elapsedTime: TimeInterval = 0.0

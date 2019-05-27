@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FB142710229C26D5006CE039 /* MenuLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB14270F229C26D5006CE039 /* MenuLayer.swift */; };
 		FB66E568229BDC21009C035B /* PhysicsCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB66E567229BDC21009C035B /* PhysicsCategory.swift */; };
 		FB6A0272229BB8DB002DCF59 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB6A0271229BB8DB002DCF59 /* AppDelegate.swift */; };
 		FB6A0274229BB8DB002DCF59 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = FB6A0273229BB8DB002DCF59 /* GameScene.sks */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		FB14270F229C26D5006CE039 /* MenuLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuLayer.swift; sourceTree = "<group>"; };
 		FB66E567229BDC21009C035B /* PhysicsCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhysicsCategory.swift; sourceTree = "<group>"; };
 		FB6A026E229BB8DB002DCF59 /* Skateboarder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Skateboarder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FB6A0271229BB8DB002DCF59 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -68,6 +70,7 @@
 				FB6A0273229BB8DB002DCF59 /* GameScene.sks */,
 				FB6A0275229BB8DB002DCF59 /* Actions.sks */,
 				FB6A0277229BB8DB002DCF59 /* GameScene.swift */,
+				FB14270F229C26D5006CE039 /* MenuLayer.swift */,
 				FB66E567229BDC21009C035B /* PhysicsCategory.swift */,
 				FB6A0289229BBEC0002DCF59 /* Skater.swift */,
 				FB6A0279229BB8DB002DCF59 /* GameViewController.swift */,
@@ -152,6 +155,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FB142710229C26D5006CE039 /* MenuLayer.swift in Sources */,
 				FB6A0278229BB8DB002DCF59 /* GameScene.swift in Sources */,
 				FB6A028A229BBEC0002DCF59 /* Skater.swift in Sources */,
 				FB66E568229BDC21009C035B /* PhysicsCategory.swift in Sources */,
