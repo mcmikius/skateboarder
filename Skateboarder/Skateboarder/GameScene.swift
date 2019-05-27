@@ -26,12 +26,16 @@ class GameScene: SKScene {
     
     override func didMove(to view: SKView) {
         
+        physicsWorld.gravity = CGVector(dx: 0.0, dy: -6.0)
+        
         anchorPoint = CGPoint.zero
         let background = SKSpriteNode(imageNamed: "background")
         let xMid = frame.midX
         let yMid = frame.midY
         background.position = CGPoint(x: xMid, y: yMid)
         addChild(background)
+        // Создаем скейтбордистку и добавляем ее к сцене
+        skater.setupPhysicsBody()
         // Настраиваем свойства скейтбордистки и добавляем ее в сцену
         resetSkater()
         addChild(skater)
@@ -64,7 +68,12 @@ class GameScene: SKScene {
         
         // Добавляем новую секцию к массиву
         bricks.append(brick)
-        
+        // Настройка физического тела секции
+        let center = brick.centerRect.origin
+        brick.physicsBody = SKPhysicsBody(rectangleOf: brick.size, center: center)
+        brick.physicsBody?.affectedByGravity = false
+        brick.physicsBody?.categoryBitMask = PhysicsCategory.brick
+        brick.physicsBody?.collisionBitMask = 0
         // Возвращаем новую секцию вызывающему коду
         return brick
     }
