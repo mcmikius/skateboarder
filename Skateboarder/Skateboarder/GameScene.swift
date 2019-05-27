@@ -379,7 +379,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         // Проверяем, есть ли контакт между скейтбордисткой и секцией
         if contact.bodyA.categoryBitMask == PhysicsCategory.skater && contact.bodyB.categoryBitMask == PhysicsCategory.brick {
-            
+            if let velocityY = skater.physicsBody?.velocity.dy {
+                if !skater.isOnGround && velocityY < 100.0 {
+                    skater.createSparks()
+                }
+            }
             skater.isOnGround = true
         } else if contact.bodyA.categoryBitMask == PhysicsCategory.skater && contact.bodyB.categoryBitMask == PhysicsCategory.gem {
             // Скейтбордистка коснулась алмаза, поэтому мы его убираем
