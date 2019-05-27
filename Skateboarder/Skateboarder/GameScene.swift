@@ -123,6 +123,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func updateHighScoreLabelText() {
+        if let highScoreLabel = childNode(withName: "highScoreLabel") as? SKLabelNode {
+            highScoreLabel.text = String(format: "%04d", highScore)
+        }
+    }
+    
     func startGame() {
         // Возвращение к начальным условиям при запуске новой игры
         resetSkater()
@@ -140,7 +146,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     func gameOver() {
+        // По завершении игры проверяем, добился ли игрок нового рекорда
+        if score > highScore {
+            highScore = score
+        }
         startGame()
+        
         
     }
     
@@ -225,7 +236,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Время от времени мы оставляем разрывы, через которые герой должен перепрыгнуть
             let randomNumber = arc4random_uniform(99)
             
-            if randomNumber < 5 {
+            if randomNumber < 2 && score > 10 {
                 
                 // 5-процентный шанс на то, что у нас
                 // возникнет разрыв между секциями
@@ -236,7 +247,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 let newGemY = brickY + skater.size.height + randomGemYAmount
                 let newGemX = brickX - gap / 2.0
                 spawnGem(atPosition: CGPoint(x: newGemX, y: newGemY))
-            } else if randomNumber < 10 {
+            } else if randomNumber < 4 && score > 20 {
                 // В игре имеется 5-процентный шанс на изменение уровня секции
                 if brickLevel == .high {
                     brickLevel = .low
