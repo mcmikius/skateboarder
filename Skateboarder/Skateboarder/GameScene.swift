@@ -34,6 +34,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let startingScrollSpeed: CGFloat = 5.0
     // Константа для гравитации (того, как быстро объекты падают на Землю)
     let gravitySpeed: CGFloat = 1.5
+    // Свойства для отслеживания результата
+    var score: Int = 0
+    var highScore: Int = 0
+    var lastScoreUpdateTime: TimeInterval = 0.0
     // Время последнего вызова для метода обновления
     var lastUpdateTime: TimeInterval?
     // Здесь мы создаем героя игры - скейтбордистку
@@ -52,6 +56,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let yMid = frame.midY
         background.position = CGPoint(x: xMid, y: yMid)
         addChild(background)
+        setupLabels()
         // Создаем скейтбордистку и добавляем ее к сцене
         skater.setupPhysicsBody()
         addChild(skater)
@@ -75,9 +80,53 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         skater.physicsBody?.angularVelocity = 0.0
     }
     
+    func setupLabels() {
+        // Надпись со словами "очки" в верхнем левом углу
+        let scoreTextLabel: SKLabelNode = SKLabelNode(text: "очки")
+        scoreTextLabel.position = CGPoint(x: 14.0, y: frame.size.height - 20.0)
+        scoreTextLabel.horizontalAlignmentMode = .left
+        scoreTextLabel.fontName = "Courier-Bold"
+        scoreTextLabel.fontSize = 14.0
+        scoreTextLabel.zPosition = 20
+        addChild(scoreTextLabel)
+        // Надпись с количеством очков игрока в текущей игре
+        let scoreLabel: SKLabelNode = SKLabelNode(text: "0")
+        scoreLabel.position = CGPoint(x: 14.0, y: frame.size.height - 40.0)
+        scoreLabel.horizontalAlignmentMode = .left
+        scoreLabel.fontName = "Courier-Bold"
+        scoreLabel.fontSize = 18.0
+        scoreLabel.name = "scoreLabel"
+        scoreLabel.zPosition = 20
+        addChild(scoreLabel)
+        // Надпись "лучший результат" в правом верхнем углу
+        let highScoreTextLabel: SKLabelNode = SKLabelNode(text: "лучший результат")
+        highScoreTextLabel.position = CGPoint(x: frame.size.width - 14.0, y: frame.size.height - 20.0)
+        highScoreTextLabel.horizontalAlignmentMode = .right
+        highScoreTextLabel.fontName = "Courier-Bold"
+        highScoreTextLabel.fontSize = 14.0
+        highScoreTextLabel.zPosition = 20
+        addChild(highScoreTextLabel)
+        // Надпись с максимумом набранных игроком очков
+        let highScoreLabel: SKLabelNode = SKLabelNode(text: "0")
+        highScoreLabel.position = CGPoint(x: frame.size.width - 14.0, y: frame.size.height - 40.0)
+        highScoreLabel.horizontalAlignmentMode = .right
+        highScoreLabel.fontName = "Courier-Bold"
+        highScoreLabel.fontSize = 18.0
+        highScoreLabel.name = "highScoreLabel"
+        highScoreLabel.zPosition = 20
+        addChild(highScoreLabel)
+    }
+    
+    func updateScoreLabelText() {
+        if let scoreLabel = childNode(withName: "scoreLabel") as? SKLabelNode {
+            scoreLabel.text = String(format: "%04d", score)
+        }
+    }
+    
     func startGame() {
         // Возвращение к начальным условиям при запуске новой игры
         resetSkater()
+        score = 0
         scrollSpeed = startingScrollSpeed
         brickLevel = .low
         lastUpdateTime = nil
@@ -230,6 +279,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    func updateScore(withCurrentTime currentTime: TimeInterval) {
+        // Количество очков игрока увеличивается по мере игры
+        // Счет обновляется каждую секунду
+        let elapsedTime = currentTime - lastScoreUpdateTime
+        if elapsedTime > 1.0 {
+            // Увеличиваем количество очков
+            score += Int(scrollSpeed)
+            // Присваиваем свойству lastScoreUpdateTime значение текущего времени
+            lastScoreUpdateTime = currentTime
+            updateScoreLabelText()
+        }
+    }
+    
     override func update(_ currentTime: TimeInterval) {
         
         // Медленно увеличиваем значение scrollSpeed по мере развития игры
@@ -249,6 +311,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         updateBricks(withScrollAmount: currentScrollAmount)
         updateSkater()
         updateGems(withScrollAmount: currentScrollAmount)
+        updateScore(withCurrentTime: currentTime)
     }
     
     @objc func handleTap(tapGesture: UITapGestureRecognizer) {
