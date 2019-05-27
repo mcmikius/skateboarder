@@ -9,10 +9,21 @@
 import SpriteKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
+    
+    // Enum для положения секции по y
+    // Секции на земле низкие, а секции на верхней платформе высокие
+    enum BrickLevel: CGFloat {
+        case low = 0.0
+        case high = 100.0
+    }
     // Массив, содержащий все текущие секции тротуара
     var bricks = [SKSpriteNode]()
     // Размер секций на тротуаре
     var brickSize = CGSize.zero
+    
+    // Текущий уровень определяет положение по оси y для новых секций
+    var brickLevel = BrickLevel.low
+    
     // Настройка скорости движения направо для игры
     // Это значение может увеличиваться по мере продвижения пользователя в игре
     var scrollSpeed: CGFloat = 5.0
@@ -29,7 +40,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         physicsWorld.gravity = CGVector(dx: 0.0, dy: -6.0)
         physicsWorld.contactDelegate = self
+        
         anchorPoint = CGPoint.zero
+        
         let background = SKSpriteNode(imageNamed: "background")
         let xMid = frame.midX
         let yMid = frame.midY
@@ -62,12 +75,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Возвращение к начальным условиям при запуске новой игры
         resetSkater()
         scrollSpeed = startingScrollSpeed
+        brickLevel = .low
         lastUpdateTime = nil
         for brick in bricks {
             brick.removeFromParent()
         }
         bricks.removeAll(keepingCapacity: true)
-
+        
     }
     
     func gameOver() {
@@ -131,7 +145,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         while farthestRightBrickX < frame.width {
             
             var brickX = farthestRightBrickX + brickSize.width + 1.0
-            let brickY = brickSize.height / 2.0
+            let brickY = (brickSize.height / 2.0) + brickLevel.rawValue
             
             // Время от времени мы оставляем разрывы, через которые герой должен перепрыгнуть
             let randomNumber = arc4random_uniform(99)
@@ -142,6 +156,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // возникнет разрыв между секциями
                 let gap = 20.0 * scrollSpeed
                 brickX += gap
+            } else if randomNumber < 10 {
+                // В игре имеется 5-процентный шанс на изменение уровня секции
+                if brickLevel == .high {
+                    brickLevel = .low
+                } else if brickLevel == .low {
+                    brickLevel = .high
+                }
             }
             
             // Добавляем новую секцию и обновляем положение самой правой
@@ -167,9 +188,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        // Вызывается перед адресовкой каждого фрейма
-        // Определяем время, прошедшее с момента последнего вызова update
         
+        // Медленно увеличиваем значение scrollSpeed по мере развития игры
+        scrollSpeed += 0.01
+        
+        // Определяем время, прошедшее с момента последнего вызова update
         var elapsedTime: TimeInterval = 0.0
         
         if let lastTimeStamp = lastUpdateTime {
