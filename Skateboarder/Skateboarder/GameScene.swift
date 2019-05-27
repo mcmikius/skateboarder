@@ -30,8 +30,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // Настройка скорости движения направо для игры
     // Это значение может увеличиваться по мере продвижения пользователя в игре
-    var scrollSpeed: CGFloat = 5.0
-    let startingScrollSpeed: CGFloat = 5.0
+    var scrollSpeed: CGFloat = 2.0
+    let startingScrollSpeed: CGFloat = 2.0
     // Константа для гравитации (того, как быстро объекты падают на Землю)
     let gravitySpeed: CGFloat = 1.5
     // Свойства для отслеживания результата
@@ -295,7 +295,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func update(_ currentTime: TimeInterval) {
         
         // Медленно увеличиваем значение scrollSpeed по мере развития игры
-        scrollSpeed += 0.01
+        scrollSpeed += 0.001
         
         // Определяем время, прошедшее с момента последнего вызова update
         var elapsedTime: TimeInterval = 0.0
@@ -329,6 +329,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // Скейтбордистка коснулась алмаза, поэтому мы его убираем
             if let gem = contact.bodyB.node as? SKSpriteNode {
                 removeGem(gem)
+                // Даем игроку 50 очков за собранный алмаз
+                score += 50
+                updateScoreLabelText()
             }
         }
     }
