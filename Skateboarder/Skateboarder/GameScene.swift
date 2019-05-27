@@ -16,6 +16,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // Настройка скорости движения направо для игры
     // Это значение может увеличиваться по мере продвижения пользователя в игре
     var scrollSpeed: CGFloat = 5.0
+    let startingScrollSpeed: CGFloat = 5.0
     // Константа для гравитации (того, как быстро объекты падают на Землю)
     let gravitySpeed: CGFloat = 1.5
     // Время последнего вызова для метода обновления
@@ -36,13 +37,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         addChild(background)
         // Создаем скейтбордистку и добавляем ее к сцене
         skater.setupPhysicsBody()
-        // Настраиваем свойства скейтбордистки и добавляем ее в сцену
-        resetSkater()
         addChild(skater)
         // Добавляем распознаватель нажатия, чтобы знать, когда пользователь нажимает на экран
         let tapMethod = #selector(GameScene.handleTap(tapGesture:))
         let tapGesture = UITapGestureRecognizer(target: self, action: tapMethod)
         view.addGestureRecognizer(tapGesture)
+        startGame()
     }
     
     func resetSkater() {
@@ -53,6 +53,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         skater.position = CGPoint(x: skaterX, y: skaterY)
         skater.zPosition = 10
         skater.minimumY = skaterY
+        skater.zRotation = 0.0
+        skater.physicsBody?.velocity = CGVector(dx: 0.0, dy: 0.0)
+        skater.physicsBody?.angularVelocity = 0.0
+    }
+    
+    func startGame() {
+        // Возвращение к начальным условиям при запуске новой игры
+        resetSkater()
+        scrollSpeed = startingScrollSpeed
+        lastUpdateTime = nil
+        for brick in bricks {
+            brick.removeFromParent()
+        }
+        bricks.removeAll(keepingCapacity: true)
+
     }
     
     func spawnBrick(atPosition position: CGPoint) -> SKSpriteNode {
