@@ -16,8 +16,9 @@ class GameScene: SKScene {
         let yMid = frame.midY
         background.position = CGPoint(x: xMid, y: yMid)
         addChild(background)
+        
     }
     override func update(_ currentTime: TimeInterval) {
-        <#code#>
+        // Called before each frame is rendered
     }
 }
