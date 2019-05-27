@@ -75,7 +75,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let tapMethod = #selector(GameScene.handleTap(tapGesture:))
         let tapGesture = UITapGestureRecognizer(target: self, action: tapMethod)
         view.addGestureRecognizer(tapGesture)
-        startGame()
+        
+        // Добавляем слой меню с текстом "Нажмите, чтобы играть"
+        let menuBackgroundColor = UIColor.black.withAlphaComponent(0.4)
+        let menuLayer = MenuLayer(color: menuBackgroundColor, size: frame.size)
+        menuLayer.anchorPoint = CGPoint(x: 0.0, y: 0.0)
+        menuLayer.position = CGPoint(x: 0.0, y: 0.0)
+        menuLayer.zPosition = 30
+        menuLayer.name = "menuLayer"
+        menuLayer.display(message: "Tap to play", score: nil)
+        addChild(menuLayer)
     }
     
     func resetSkater() {
@@ -93,7 +102,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     func setupLabels() {
         // Надпись со словами "очки" в верхнем левом углу
-        let scoreTextLabel: SKLabelNode = SKLabelNode(text: "очки")
+        let scoreTextLabel: SKLabelNode = SKLabelNode(text: "score")
         scoreTextLabel.position = CGPoint(x: 14.0, y: frame.size.height - 20.0)
         scoreTextLabel.horizontalAlignmentMode = .left
         scoreTextLabel.fontName = "Courier-Bold"
@@ -110,7 +119,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreLabel.zPosition = 20
         addChild(scoreLabel)
         // Надпись "лучший результат" в правом верхнем углу
-        let highScoreTextLabel: SKLabelNode = SKLabelNode(text: "лучший результат")
+        let highScoreTextLabel: SKLabelNode = SKLabelNode(text: "high score")
         highScoreTextLabel.position = CGPoint(x: frame.size.width - 14.0, y: frame.size.height - 20.0)
         highScoreTextLabel.horizontalAlignmentMode = .right
         highScoreTextLabel.fontName = "Courier-Bold"
@@ -162,7 +171,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // По завершении игры проверяем, добился ли игрок нового рекорда
         if score > highScore {
             highScore = score
+            updateHighScoreLabelText()
         }
+        // Показываем надпись "Игра окончена!"
+        let menuBackgroundColor = UIColor.black.withAlphaComponent(0.4)
+        let menuLayer = MenuLayer(color: menuBackgroundColor, size: frame.size)
+        menuLayer.anchorPoint = CGPoint.zero
+        menuLayer.position = CGPoint.zero
+        menuLayer.zPosition = 30
+        menuLayer.name = "menuLayer"
+        menuLayer.display(message: "Game Over!", score: score)
+        addChild(menuLayer)
     }
     
     func spawnBrick(atPosition position: CGPoint) -> SKSpriteNode {
@@ -208,6 +227,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // MARK:- Update Methods
     func updateBricks(withScrollAmount currentScrollAmount: CGFloat) {
         // Отслеживаем самое большое значение по оси x для всех существующих секций
         var farthestRightBrickX: CGFloat = 0.0
@@ -313,6 +333,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
     }
     
+    // MARK:- Main Game Loop Method
     override func update(_ currentTime: TimeInterval) {
         if gameState != .running {
             return
@@ -337,16 +358,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         updateScore(withCurrentTime: currentTime)
     }
     
+    // MARK:- Touch Handling Methods
     @objc func handleTap(tapGesture: UITapGestureRecognizer) {
-        // Заставляем скейтбордистку прыгнуть нажатием на экран, 8 пока она находится на земле
-        if skater.isOnGround {
-            skater.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: 260.0))
+        if gameState == .running {
+            // Заставляем скейтбордистку прыгнуть нажатием на экран, 8 пока она находится на земле
+            if skater.isOnGround {
+                skater.physicsBody?.applyImpulse(CGVector(dx: 0.0, dy: 260.0))
+                run(SKAction.playSoundFileNamed("jump.wav", waitForCompletion: false))
+            }
+        } else {
+            // Если игра не запущена, нажатие на экран запускает новую игру
+            if let menuLayer: SKSpriteNode = childNode(withName: "menuLayer") as? SKSpriteNode {
+                menuLayer.removeFromParent()
+            }
+            
+            startGame()
         }
     }
     // MARK:- SKPhysicsContactDelegate Methods
     func didBegin(_ contact: SKPhysicsContact) {
         // Проверяем, есть ли контакт между скейтбордисткой и секцией
         if contact.bodyA.categoryBitMask == PhysicsCategory.skater && contact.bodyB.categoryBitMask == PhysicsCategory.brick {
+            
             skater.isOnGround = true
         } else if contact.bodyA.categoryBitMask == PhysicsCategory.skater && contact.bodyB.categoryBitMask == PhysicsCategory.gem {
             // Скейтбордистка коснулась алмаза, поэтому мы его убираем
@@ -355,6 +388,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 // Даем игроку 50 очков за собранный алмаз
                 score += 50
                 updateScoreLabelText()
+                run(SKAction.playSoundFileNamed("gem.wav", waitForCompletion: false))
             }
         }
     }
