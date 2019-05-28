@@ -23,7 +23,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         case running
     }
     
+    
     // MARK:- Class Properties
+    
+    // Создание переменной для фоновой музыки
+    var backgroundMusic: SKAudioNode!
     
     // Массив, содержащий все текущие секции тротуара
     var bricks = [SKSpriteNode]()
@@ -85,6 +89,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         menuLayer.name = "menuLayer"
         menuLayer.display(message: "Tap to play", score: nil)
         addChild(menuLayer)
+        
+        // Фоновая музыка для игры
+        let backgroundSound = SKAudioNode(fileNamed: "bg.mp3")
+        self.addChild(backgroundSound)
     }
     
     func resetSkater() {
