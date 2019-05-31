@@ -32,7 +32,7 @@ class MenuLayer: SKSpriteNode {
         // Если количество очков было передано методу, показываем надпись на экране
         if let scoreToDisplay = score {
             // Создаем текст с количеством очков из числа score
-            let scoreString = String(format: "Очки:%04d", scoreToDisplay)
+            let scoreString = String(format: "Scores:%04d", scoreToDisplay)
             let scoreLabel: SKLabelNode = SKLabelNode(text: scoreString)
             // Задаем начальное положение надписи справа от слоя меню
             let scoreLabelX = frame.width
